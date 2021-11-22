@@ -1,4 +1,4 @@
-﻿
+﻿@model LoginViewModel
 @{
     ViewData["Title"] = "Login";
 }
@@ -9,7 +9,7 @@
 }
 
 <div id="logreg-forms">
-    <form class="form-signin">
+    <form asp-action="Login" method="post" class="form-signin">
         <br />
         <h1 class="h3 mb-3 font-weight-normal" style="text-align: center"> Sign in</h1>
         <div class="social-login">
@@ -19,9 +19,16 @@
         <br />
         <p style="text-align:center">OR</p>
         <hr>
+        <div asp-validation-summary="All" class="text-danger"></div>
+        @{
+            if (Model?.LoginFailed == true)
+            { 
+                <div class="text-danger">Login failed</div>
+            }
+         }
 
-        <input type="text" id="inputUsername" class="form-control" placeholder="Usename" required="" autofocus="">
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+        <input asp-for="Username" type="text" id="inputUsername" class="form-control" placeholder="Usename" autofocus="">
+        <input asp-for="Password" type="password" id="inputPassword" class="form-control" placeholder="Password">
         <br />
 
         <button class="btn btn-success btn-block" type="submit"><i class="fas fa-sign-in-alt"></i> Sign in</button>
@@ -29,6 +36,6 @@
         <br />
         <hr>
         <!-- <p>Don't have an account!</p>  -->
-        <button class="btn btn-primary btn-block" type="button" id="btn-signup"><i class="fas fa-user-plus"></i> Sign up New Account</button>
+        <a asp-action="Register" class="btn btn-primary btn-block text-white" type="button" id="btn-signup"><i class="fas fa-user-plus"></i> Sign up New Account</a>
     </form>
 </div>
