@@ -23,6 +23,9 @@ namespace Mahdar.Eshop.Web.Models.Entity
         [Required]
         public string Description { get; set; }
 
+        [Required]
+        public double Price { get; set; }
+
         [NotMapped]
         public IFormFile Image { get; set; }
 
