@@ -52,7 +52,7 @@ namespace Mahdar.Eshop.Web.Areas.Security.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(LoginViewModel loginVM)
+        public async Task<IActionResult> Login(LoginViewModel loginVM)
         {
             if (ModelState.IsValid)
             {

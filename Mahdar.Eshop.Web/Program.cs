@@ -51,6 +51,13 @@ namespace Mahdar.Eshop.Web
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .ConfigureLogging(loggingBuilder =>
+                {
+                    loggingBuilder.ClearProviders();
+                    loggingBuilder.AddConsole();
+                    loggingBuilder.AddDebug();
+                    loggingBuilder.AddFile("Logs/");
                 });
     }
 }
