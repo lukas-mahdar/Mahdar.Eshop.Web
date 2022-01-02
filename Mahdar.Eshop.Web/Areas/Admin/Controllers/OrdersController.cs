@@ -7,10 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Mahdar.Eshop.Web.Models.Database;
 using Mahdar.Eshop.Web.Models.Entity;
+using Microsoft.AspNetCore.Authorization;
+using Mahdar.Eshop.Web.Models.Identity;
 
 namespace Mahdar.Eshop.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = nameof(Roles.Admin) + ", " + nameof(Roles.Manager))]
     public class OrdersController : Controller
     {
         private readonly EshopDbContext _context;

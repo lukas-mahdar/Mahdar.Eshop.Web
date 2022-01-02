@@ -14,6 +14,8 @@
         <tr>
             <th scope="col">ID</th>
             <th scope="col">Name</th>
+            <th scope="col">Price</th>
+            <th scope="col">Description</th>
             <th scope="col">Edit</th>
             <th scope="col">Delete</th>
         </tr>
@@ -27,6 +29,8 @@
                 <tr>
                     <th scope="row">@Model.ProductItems[i].ID</th>
                     <td>@Model.ProductItems[i].Name</td>
+                    <td>@Model.ProductItems[i].Price</td>
+                    <td>@Model.ProductItems[i].Description</td>
                     <td><a asp-action="Edit" asp-route-ID="@Model.ProductItems[i].ID">Edit</a></td>
                     <td><a asp-action="Delete" asp-route-ID="@Model.ProductItems[i].ID" onclick="return ConfirmDelete();">Delete</a></td>
                 </tr>

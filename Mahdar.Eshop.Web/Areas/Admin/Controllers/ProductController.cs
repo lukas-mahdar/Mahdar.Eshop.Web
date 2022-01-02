@@ -9,6 +9,7 @@ using Mahdar.Eshop.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Authorization;
 using Mahdar.Eshop.Web.Models.Identity;
+using Mahdar.Eshop.Web.Models.Implementation;
 
 namespace Mahdar.Eshop.Web.Areas.Admin.Controllers
 {
@@ -39,18 +40,27 @@ namespace Mahdar.Eshop.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Product productItem)
         {
-            if (String.IsNullOrEmpty(productItem.Name) == false
-                && String.IsNullOrEmpty(productItem.Description) == false)
-            {
-                eshopDbContext.ProductItems.Add(productItem);
-                await eshopDbContext.SaveChangesAsync();
-                return RedirectToAction(nameof(ProductController.Select));
-            }
-            else
-            {
-                return View(productItem);
-            }
+            FileUpload fileUpload = new FileUpload(env.WebRootPath, "img/Products", "image");
 
+            if ((fileUpload.CheckFileContent(productItem.Image)
+               && fileUpload.CheckFileLength(productItem.Image)) && (fileUpload.CheckFileContent(productItem.Image2)
+               && fileUpload.CheckFileLength(productItem.Image2)))
+            {
+                productItem.ImageSource450x300 = await fileUpload.FileUploadAsync(productItem.Image);
+                productItem.ImageSource600x700 = await fileUpload.FileUploadAsync(productItem.Image2);
+
+                ModelState.Clear();
+                TryValidateModel(productItem);
+                if (ModelState.IsValid)
+                {
+                    eshopDbContext.ProductItems.Add(productItem);
+
+                    await eshopDbContext.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(ProductController.Select));
+                }
+            }
+            return View(productItem);
         }
 
         public IActionResult Edit(int ID)
@@ -69,21 +79,39 @@ namespace Mahdar.Eshop.Web.Areas.Admin.Controllers
 
             if (productItem != null)
             {
-                if (String.IsNullOrEmpty(productItem.Name) == false
-                    && String.IsNullOrEmpty(productItem.Description) == false)
+                if (pItem.Image != null && pItem.Image2 != null)
                 {
-                    productItem.Name = pItem.Name;
-                    productItem.Description = pItem.Description;
+                    FileUpload fileUpload = new FileUpload(env.WebRootPath, "img/Products", "image");
 
-                    await eshopDbContext.SaveChangesAsync();
-                    return RedirectToAction(nameof(ProductController.Select));
+                    if ((fileUpload.CheckFileContent(pItem.Image)
+                       && fileUpload.CheckFileLength(pItem.Image)) || (fileUpload.CheckFileContent(pItem.Image2)
+                       && fileUpload.CheckFileLength(pItem.Image2)))
+                    {
+                        pItem.ImageSource450x300 = await fileUpload.FileUploadAsync(pItem.Image);
+                        productItem.ImageSource450x300 = pItem.ImageSource450x300;
+                        pItem.ImageSource600x700 = await fileUpload.FileUploadAsync(pItem.Image2);
+                        productItem.ImageSource600x700 = pItem.ImageSource600x700;
+                    }
                 }
                 else
                 {
-                    return View(productItem);
+                    pItem.ImageSource450x300 = "-";
+                    pItem.ImageSource600x700 = "-";
+                }
+                ModelState.Clear();
+                TryValidateModel(pItem);
+                if (ModelState.IsValid)
+                {
+                    productItem.Name = pItem.Name;
+                    productItem.Description = pItem.Description;
+                    productItem.Price = pItem.Price;
+
+                    await eshopDbContext.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(ProductController.Select));
                 }
             }
-            return NotFound();
+            return View(productItem);
         }
         public async Task<IActionResult> Delete(int ID)
         {

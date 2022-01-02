@@ -69,7 +69,7 @@ namespace Mahdar.Eshop.Web.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["OrderID"] = new SelectList(_context.Orders, "ID", "OrderNumber", orderItem.OrderID);
-            ViewData["ProductID"] = new SelectList(_context.ProductItems, "ID", "Description", orderItem.ProductID);
+            ViewData["ProductID"] = new SelectList(_context.ProductItems, "ID", "ImageSource450x300", orderItem.ProductID);
             return View(orderItem);
         }
 
@@ -87,7 +87,7 @@ namespace Mahdar.Eshop.Web.Areas.Admin.Controllers
                 return NotFound();
             }
             ViewData["OrderID"] = new SelectList(_context.Orders, "ID", "OrderNumber", orderItem.OrderID);
-            ViewData["ProductID"] = new SelectList(_context.ProductItems, "ID", "Description", orderItem.ProductID);
+            ViewData["ProductID"] = new SelectList(_context.ProductItems, "ID", "ImageSource450x300", orderItem.ProductID);
             return View(orderItem);
         }
 
@@ -124,7 +124,7 @@ namespace Mahdar.Eshop.Web.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["OrderID"] = new SelectList(_context.Orders, "ID", "OrderNumber", orderItem.OrderID);
-            ViewData["ProductID"] = new SelectList(_context.ProductItems, "ID", "Description", orderItem.ProductID);
+            ViewData["ProductID"] = new SelectList(_context.ProductItems, "ID", "ImageSource450x300", orderItem.ProductID);
             return View(orderItem);
         }
 

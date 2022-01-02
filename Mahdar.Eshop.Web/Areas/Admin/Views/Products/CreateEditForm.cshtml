@@ -3,6 +3,7 @@
     if (ViewBag.Action != null)
     {
     <form asp-action="@ViewBag.Action" method="post" enctype="multipart/form-data">
+        <div class="text-danger" asp-validation-summary="All"></div>
         @{
             if (ViewBag.Action == nameof(ProductController.Edit))
             {
@@ -14,8 +15,22 @@
             <input asp-for="Name" type="text" class="form-control" placeholder="Enter product's name'">
         </div>
         <div class="form-group">
-            <label asp-for="Image">Image 450x300 Source</label>
-            <input asp-for="Image" class="form-control-file">
+            <label asp-for="Price">Price</label>
+            <input asp-for="Price" type="text" class="form-control" placeholder="Enter Price">
+        </div>
+        <div class="form-group">
+            <label asp-for="Description">Description</label>
+            <input asp-for="Description" type="text" class="form-control" placeholder="Enter Description">
+        </div>
+        <div class="form-group">
+            <label asp-for="Image">Image Source 450x300</label>
+            <input id="fileupload" asp-for="Image" class="form-control-file">
+            <span class="text-danger" asp-validation-for="Image"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Image2">Image Source 600x700</label>
+            <input id="fileupload" asp-for="Image2" class="form-control-file">
+            <span class="text-danger" asp-validation-for="Image2"></span>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
