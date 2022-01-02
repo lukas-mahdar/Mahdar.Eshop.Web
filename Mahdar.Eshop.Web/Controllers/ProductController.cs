@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mahdar.Eshop.Web.Models.Database;
+using Mahdar.Eshop.Web.Models.Entity;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +10,21 @@ namespace Mahdar.Eshop.Web.Controllers
 {
     public class ProductController : Controller
     {
+        readonly EshopDbContext eshopDbContext;
+
+        public ProductController(EshopDbContext eshopDb)
+        {
+            eshopDbContext = eshopDb;
+        }
         public IActionResult Detail(int ID)
         {
-            return View();
+            Product productItem = eshopDbContext.ProductItems.FirstOrDefault(ci => ci.ID == ID);
+
+            if (productItem != null)
+            {
+                return View();
+            }
+            return NotFound();
         }
     }
 }

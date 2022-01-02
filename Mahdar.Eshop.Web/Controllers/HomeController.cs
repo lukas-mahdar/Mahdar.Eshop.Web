@@ -14,14 +14,17 @@ namespace Mahdar.Eshop.Web.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        readonly EshopDbContext eshopDbContext;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(EshopDbContext eshopDb, ILogger<HomeController> logger)
         {
             _logger = logger;
+            eshopDbContext = eshopDb;
         }
 
         public IActionResult Index()
         {
+            _logger.LogInformation("Nacitanie Home Index");
             IndexViewModel indexVM = new IndexViewModel();
             indexVM.CarouselItems = DatabaseFake.CarouselItems;
             indexVM.ProductItems = DatabaseFake.ProductItems;
