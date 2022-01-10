@@ -26,8 +26,8 @@ namespace Mahdar.Eshop.Web.Controllers
         {
             _logger.LogInformation("Nacitanie Home Index");
             IndexViewModel indexVM = new IndexViewModel();
-            indexVM.CarouselItems = DatabaseFake.CarouselItems;
-            indexVM.ProductItems = DatabaseFake.ProductItems;
+            indexVM.CarouselItems = eshopDbContext.CarouselItems.ToList();
+            indexVM.ProductItems = eshopDbContext.ProductItems.ToList();
 
             return View(indexVM);
         }

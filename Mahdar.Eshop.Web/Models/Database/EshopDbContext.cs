@@ -14,10 +14,11 @@ namespace Mahdar.Eshop.Web.Models.Database
     {
         public DbSet<CarouselItem> CarouselItems { get; set; }
         public DbSet<Product> ProductItems { get; set; }
-
         public DbSet<Order> Orders { get; set; }
-
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+
 
 
 

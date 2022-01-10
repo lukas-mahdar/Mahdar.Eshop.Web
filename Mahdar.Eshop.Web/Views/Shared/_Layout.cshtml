@@ -10,7 +10,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Eshop</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -20,10 +20,10 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         @{
                             @if (User.Identity.IsAuthenticated == true && (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Manager.ToString())))
@@ -81,8 +81,8 @@
                         @if (User.Identity.IsAuthenticated == false)
                         {
                             <ul class="navbar-nav navbar-right">
-                                <li class="nav-item"><a class="nav-link text-dark" asp-area="Security" asp-controller="Account" asp-action="Register"><span class="glyphicon"></span> Sign Up</a></li>
-                                <li class="nav-item"><a class="nav-link text-dark" asp-area="Security" asp-controller="Account" asp-action="Login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                                <li class="nav-item"><a class="nav-link text-light" asp-area="Security" asp-controller="Account" asp-action="Register"><span class="glyphicon"></span> Sign Up</a></li>
+                                <li class="nav-item"><a class="nav-link text-light" asp-area="Security" asp-controller="Account" asp-action="Login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
                             </ul>
                         }
                         else
@@ -91,7 +91,7 @@
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">Logged as @User.Identity.Name</a>
                                     <ul class="dropdown-menu dropdown-menu-dark">
-                                        <li class="nav-item"><a class="nav-link text-dark" asp-area="Security" asp-controller="Account" asp-action="Logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                                        <li class="nav-item"><a class="nav-link text-light" asp-area="Security" asp-controller="Account" asp-action="Logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                                     </ul>
                                 </li>
                             </ul>
