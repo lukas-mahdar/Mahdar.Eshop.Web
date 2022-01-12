@@ -72,14 +72,65 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
 
         public async Task<IActionResult> Sub(int id)
         {
+            User currentUser = await iSecure.GetCurrentUser(User);
+            Cart userOrders = EshopDbContext.Carts.Where(or => or.CartNumber == currentUser.Id).FirstOrDefault();
+
+            var cartItem = await EshopDbContext.CartItems.FindAsync(id);
+            if (cartItem == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            var amount = cartItem.Amount;
+            --cartItem.Amount;
+            if (cartItem.Amount == 0)
+            {
+                EshopDbContext.CartItems.Remove(cartItem);
+                userOrders.TotalPrice -= cartItem.Price;
+                EshopDbContext.Update(userOrders);
+                await EshopDbContext.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            userOrders.TotalPrice -= cartItem.Price;
+            cartItem.Price -= cartItem.Price / amount;
+            userOrders.TotalPrice += cartItem.Price;
+
+            EshopDbContext.Update(cartItem);
+            EshopDbContext.Update(userOrders);
+
+            await EshopDbContext.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Add(int id)
         {
+            User currentUser = await iSecure.GetCurrentUser(User);
+            Cart userOrders = EshopDbContext.Carts.Where(or => or.CartNumber == currentUser.Id).FirstOrDefault();
+
+            var cartItem = await EshopDbContext.CartItems.FindAsync(id);
+            if (cartItem == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            if (userOrders == null)
+            { 
+                return NotFound();
+            }
+
+            var amount = cartItem.Amount;
+            ++cartItem.Amount;
+
+            userOrders.TotalPrice -= cartItem.Price;
+            cartItem.Price = cartItem.Amount * (cartItem.Price / amount);
+            userOrders.TotalPrice += cartItem.Price;
+
+            EshopDbContext.Update(cartItem);
+            EshopDbContext.Update(userOrders);
+
+            await EshopDbContext.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
-
-
     }
 }
