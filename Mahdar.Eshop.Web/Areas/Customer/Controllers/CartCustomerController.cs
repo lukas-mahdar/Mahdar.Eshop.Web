@@ -39,15 +39,17 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
                     {
                         double totalPrice = 0;
                         List<CartItem> orderItems = HttpContext.Session.GetObject<List<CartItem>>(cartItemsString);
+                        List<CartItem> empty_ = new List<CartItem>();
                         if (orderItems != null)
                         {
                             foreach (CartItem orderItem in orderItems)
                             {
-                                totalPrice += orderItem.Product.Price * orderItem.Amount;
-                                orderItem.Product = null; //zde musime nullovat referenci na produkt, jinak by doslo o pokus jej znovu vlozit do databaze
+                                totalPrice += orderItem.Product.Price * orderItem.Amount;                                
                             }
                             return View(orderItems);
                         }
+                        else
+                            return View(empty_);
                     }
                 }
             }            
