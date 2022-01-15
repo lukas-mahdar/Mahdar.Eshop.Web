@@ -12,11 +12,11 @@ namespace Mahdar.Eshop.Web.Controllers
     public class ProductController : Controller
     {
         readonly EshopDbContext eshopDbContext;
-        IWebHostEnvironment env;
+        //IWebHostEnvironment env;
 
-        public ProductController(EshopDbContext eshopDb, IWebHostEnvironment env)
+        public ProductController(EshopDbContext eshopDb)
         {
-            this.env = env;
+            //this.env = env;
             eshopDbContext = eshopDb;
         }
         public IActionResult Detail(int ID)

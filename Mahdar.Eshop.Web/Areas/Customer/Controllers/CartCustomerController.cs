@@ -21,11 +21,11 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
 
 
         ISecurityApplicationService iSecure;
-        EshopDbContext EshopDbContext;
-        public CartCustomerController(ISecurityApplicationService iSecure, EshopDbContext eshopDBContext)
+        private readonly EshopDbContext _context;
+        public CartCustomerController(ISecurityApplicationService iSecure, EshopDbContext context)
         {
             this.iSecure = iSecure;
-            EshopDbContext = eshopDBContext;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
@@ -39,20 +39,23 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
                     {
                         double totalPrice = 0;
                         List<CartItem> orderItems = HttpContext.Session.GetObject<List<CartItem>>(cartItemsString);
-                        List<CartItem> empty_ = new List<CartItem>();
+                        List<CartItem> emptyCart = new List<CartItem>();
                         if (orderItems != null)
                         {
                             foreach (CartItem orderItem in orderItems)
                             {
-                                totalPrice += orderItem.Product.Price * orderItem.Amount;                                
+                                totalPrice += orderItem.Product.Price * orderItem.Amount;
                             }
+
                             return View(orderItems);
                         }
                         else
-                            return View(empty_);
+                        {
+                            return View(emptyCart);
+                        }
                     }
                 }
-            }            
+            }
             return View();
         }
     }

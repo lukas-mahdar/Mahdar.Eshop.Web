@@ -3,14 +3,16 @@ using System;
 using Mahdar.Eshop.Web.Models.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Mahdar.Eshop.Web.Migrations.MySql
 {
     [DbContext(typeof(EshopDbContext))]
-    partial class EshopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220115123954_MySQL_1.0.7")]
+    partial class MySQL_107
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,22 +46,14 @@ namespace Mahdar.Eshop.Web.Migrations.MySql
                         .HasColumnType("int");
 
                     b.Property<int>("CartNumber")
-                        .HasMaxLength(25)
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("DateTimeUpdated")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("datetime(6)");
 
                     b.Property<double>("TotalPrice")
                         .HasColumnType("double");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("ID");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CartNumber");
 
                     b.ToTable("Cart");
                 });
@@ -170,8 +164,8 @@ namespace Mahdar.Eshop.Web.Migrations.MySql
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(64)
-                        .HasColumnType("varchar(64)");
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<double>("Price")
                         .HasColumnType("double");
@@ -382,7 +376,7 @@ namespace Mahdar.Eshop.Web.Migrations.MySql
                 {
                     b.HasOne("Mahdar.Eshop.Web.Models.Identity.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("CartNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

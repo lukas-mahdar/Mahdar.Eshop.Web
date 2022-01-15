@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Mahdar.Eshop.Web.Models.Entity.CartItem>
+
+@{
+    ViewData["Title"] = "Select item to cart";
+}
+
+<p>
+    <a asp-action="SaveCart" asp-area="Customer" asp-controller="ItemsCustomer">Add item to cart</a>
+</p>
+<h1>@ViewData["Title"]</h1>
+@{
+    double totalPrice = 0;
+    string totalPriceString = "CartPrice";
+    if (Context.Session.IsAvailable && Context.Session.Keys.Contains(totalPriceString))
+    {
+        totalPrice = Context.Session.GetDouble(totalPriceString).GetValueOrDefault();
+    }
+    <p>Add price to total price of the cart</p><span style="color:red;" id="total_price">@totalPrice.ToString("C2")</span>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Product)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                <button onclick="Buy(@item.ProductID, '@Url.Action("AddItemsToSession", "ItemsCustomer", new {Area = "Customer"})', '#total_price', '@System.Globalization.CultureInfo.CurrentCulture.Name')">+1</button>
+            </td>
+            <td>
+                <button onclick="Buy(@item.ProductID, '@Url.Action("ItemsSubSession", "ItemsCustomer", new {Area = "Customer"})', '#total_price', '@System.Globalization.CultureInfo.CurrentCulture.Name')">-1</button>
+            </td>
+        </tr>
+        }
+}
+    </tbody>
+</table>
+
+@section Scripts
+{
+    <environment include="Development">
+        <script src="~/js/Product.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/js/Product.min.js"></script>
+    </environment>
+}

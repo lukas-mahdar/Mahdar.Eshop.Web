@@ -16,9 +16,9 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
     [Authorize(Roles = nameof(Roles.Customer))]
     public class ItemsCustomerController : Controller
     {
-        const string totalcartPriceString = "CartPrice";
+        const string cartPriceString = "CartPrice";
+        const string orderPriceString = "OrderPrice";
         const string cartItemsString = "CartItems";
-        const string totalorderPriceString = "OrderPrice";
         const string orderItemsString = "OrderItems";
 
         ISecurityApplicationService iSecure;
@@ -33,23 +33,25 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
         public double AddItemsToSession(int? productId)
         {
             double totalPrice = 0;
+
             if (HttpContext.Session.IsAvailable)
             {
-                totalPrice = HttpContext.Session.GetDouble(totalcartPriceString).GetValueOrDefault();
+                totalPrice = HttpContext.Session.GetDouble(cartPriceString).GetValueOrDefault();
             }
 
             Product product = EshopDbContext.ProductItems.Where(prod => prod.ID == productId).FirstOrDefault();
 
             if (product != null)
             {
-                OrderItem orderItem = new OrderItem()
+                CartItem cartItem = new CartItem()
                 {
                     ProductID = product.ID,
                     Product = product,
                     Amount = 1,
                     Price = product.Price   //zde pozor na datový typ -> pokud máte Price v obou případech double nebo decimal, tak je to OK. Mě se bohužel povedlo mít to jednou jako decimal a jednou jako double. Nejlepší je datový typ změnit v databázi/třídě, tak to prosím udělejte.
                 };
-                CartItem cartItem = new CartItem()
+
+                OrderItem orderItem = new OrderItem()
                 {
                     ProductID = product.ID,
                     Product = product,
@@ -59,17 +61,18 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
 
                 if (HttpContext.Session.IsAvailable)
                 {
+
                     List<CartItem> cartItems = HttpContext.Session.GetObject<List<CartItem>>(cartItemsString);
                     CartItem cartItemInSession = null;
                     if (cartItems != null)
-                        cartItemInSession = cartItems.Find(oi => oi.ProductID == orderItem.ProductID);
+                        cartItemInSession = cartItems.Find(oi => oi.ProductID == cartItem.ProductID);
                     else
                         cartItems = new List<CartItem>();
 
                     if (cartItemInSession != null)
                     {
                         ++cartItemInSession.Amount;
-                        cartItemInSession.Price += orderItem.Product.Price;   //zde pozor na datový typ -> pokud máte Price v obou případech double nebo decimal, tak je to OK. Mě se bohužel povedlo mít to jednou jako decimal a jednou jako double. Nejlepší je datový typ změnit v databázi/třídě, tak to prosím udělejte.
+                        cartItemInSession.Price += cartItem.Product.Price;   //zde pozor na datový typ -> pokud máte Price v obou případech double nebo decimal, tak je to OK. Mě se bohužel povedlo mít to jednou jako decimal a jednou jako double. Nejlepší je datový typ změnit v databázi/třídě, tak to prosím udělejte.
                     }
                     else
                     {
@@ -83,6 +86,7 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
                     else
                         orderItems = new List<OrderItem>();
 
+
                     if (orderItemInSession != null)
                     {
                         ++orderItemInSession.Amount;
@@ -94,17 +98,18 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
                     }
 
                     HttpContext.Session.SetObject(orderItemsString, orderItems);
-                    HttpContext.Session.SetObject(orderItemsString, cartItems);
+                    HttpContext.Session.SetObject(cartItemsString, cartItems);
 
                     totalPrice += cartItem.Product.Price;
 
-                    HttpContext.Session.SetDouble(totalorderPriceString, totalPrice);
-                    HttpContext.Session.SetObject(totalcartPriceString, totalPrice);
+                    HttpContext.Session.SetDouble(orderPriceString, totalPrice);
+                    HttpContext.Session.SetDouble(cartPriceString, totalPrice);
                 }
             }
+
             return totalPrice;
         }
-        public async Task<IActionResult> Save()
+        public async Task<IActionResult> SaveCart()
         {
             User currentUser = await iSecure.GetCurrentUser(User);
             Cart userOrdes = EshopDbContext.Carts.Where(or => or.CartNumber == currentUser.Id).FirstOrDefault();
@@ -125,28 +130,29 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
                     {
                         CartNumber = currentUser.Id,
                         TotalPrice = totalPrice,
-                        CartItems = orderItems
+                        CartItems = orderItems,
+                        UserId = currentUser.Id
                     };
                     await EshopDbContext.AddAsync(order);
                     await EshopDbContext.SaveChangesAsync();
 
                     HttpContext.Session.Remove(cartItemsString);
-                    HttpContext.Session.Remove(totalcartPriceString);
+                    HttpContext.Session.Remove(cartPriceString);
                     return RedirectToAction(nameof(CartCustomerController.Index), nameof(CartOrderCustomerController).Replace("Controller", ""), new { Area = nameof(Customer) });
                 }
             }
             else
             {
-                double totalPrice;
-                totalPrice = userOrdes.TotalPrice;
+                double totalPrice = userOrdes.TotalPrice;
                 List<CartItem> orderItems = HttpContext.Session.GetObject<List<CartItem>>(cartItemsString);
 
                 if (orderItems != null)
                 {
                     foreach (CartItem orderItem in orderItems)
                     {
-                        var userItems = EshopDbContext.CartItems.Where(ui => ui.CartID == userOrdes.ID).FirstOrDefault(ui => ui.ProductID == orderItem.ProductID);
-                        totalPrice += orderItem.Price * orderItem.Amount;
+                        var userItems = EshopDbContext.CartItems.Where(ui => ui.CartID == userOrdes.ID)
+                                                                .FirstOrDefault(ui => ui.ProductID == orderItem.ProductID);
+                        totalPrice += orderItem.Product.Price * orderItem.Amount;
                         if (userItems != null)
                         { 
                             orderItem.ID = userOrdes.ID;
@@ -163,7 +169,7 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
                     await EshopDbContext.SaveChangesAsync();
 
                     HttpContext.Session.Remove(cartItemsString);
-                    HttpContext.Session.Remove(totalcartPriceString);
+                    HttpContext.Session.Remove(cartPriceString);
                     return RedirectToAction(nameof(CartCustomerController.Index), nameof(CartOrderCustomerController).Replace("Controller", ""), new { Area = nameof(Customer) });
                 }
             }
@@ -176,7 +182,7 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
             double totalPrice = 0;
             if (HttpContext.Session.IsAvailable)
             { 
-                totalPrice = HttpContext.Session.GetDouble(totalcartPriceString).GetValueOrDefault();
+                totalPrice = HttpContext.Session.GetDouble(cartPriceString).GetValueOrDefault();
             }
             Product productItem = EshopDbContext.ProductItems.Where(pi => pi.ID == productId).FirstOrDefault();
 
@@ -193,31 +199,31 @@ namespace Mahdar.Eshop.Web.Areas.Customer.Controllers
                 if (HttpContext.Session.IsAvailable)
                 {
                     List<CartItem> cartItems = HttpContext.Session.GetObject<List<CartItem>>(cartItemsString);
-                    CartItem cart_itemS = null;
+                    CartItem cart_itemSession = null;
                     if (cartItems != null)
                     {
-                        cart_itemS = cartItems.Find(ci => ci.ProductID == cartItem.ProductID);
+                        cart_itemSession = cartItems.Find(ci => ci.ProductID == cartItem.ProductID);
                     }
                     else
                     {
                         cartItems = new List<CartItem>();
                     }
 
-                    if (cart_itemS != null)
+                    if (cart_itemSession != null)
                     {
-                        if (cart_itemS.Amount >= 1)
+                        if (cart_itemSession.Amount >= 1)
                         {
-                            --cart_itemS.Amount;
-                            cart_itemS.Price -= cartItem.Product.Price;
+                            --cart_itemSession.Amount;
+                            cart_itemSession.Price -= cartItem.Product.Price;
                         }
-                        if (cart_itemS.Amount == 0)
+                        if (cart_itemSession.Amount == 0)
                         {
-                            cartItems.Remove(cart_itemS);
+                            cartItems.Remove(cart_itemSession);
                         }
                         totalPrice -= cartItem.Product.Price;
                     }
                     HttpContext.Session.SetObject(cartItemsString, cartItems);
-                    HttpContext.Session.SetDouble(totalcartPriceString, totalPrice);
+                    HttpContext.Session.SetDouble(cartPriceString, totalPrice);
                 }
             }
             return totalPrice;

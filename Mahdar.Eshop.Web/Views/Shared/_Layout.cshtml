@@ -63,18 +63,26 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="Customer" asp-controller="CartOrderCustomer" asp-action="Index">My Saved Cart</a>
+                                </li>
                             }
                         }
                     </ul>
                     <ul class="navbar-nav navbar-right">
                         @{
                             double totalPrice = 0;
-                            string totalPriceString = "TotalPrice";
+                            string totalPriceString = "CartPrice";
                             if (Context.Session.IsAvailable && Context.Session.Keys.Contains(totalPriceString))
                             {
                                 totalPrice = Context.Session.GetDouble(totalPriceString).GetValueOrDefault();
                             }
-                            <li class="navbar-text"><a id="total_price" class="label" style="color:red;">@totalPrice.ToString("C2")</a></li>
+                            <li class="navbar-text dropdown">
+                                <a id="total_price" class="nav-link" asp-area="Customer" asp-controller="CartCustomer" asp-action="Index" style="color: red;">@totalPrice.ToString("C2")</a>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li class="nav-item"><a class="nav-link text-light">Bag</a></li>
+                                </ul>
+                            </li>
                         }
                     </ul>
                     @{

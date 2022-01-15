@@ -12,23 +12,24 @@ namespace Mahdar.Eshop.Web.Models.Entity
     [Table(nameof(Cart))]
     public class Cart
     {
-
         [Key]
         [Required]
         public int ID { get; set; }
 
-        [ForeignKey(nameof(User))]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        public DateTime DateTimeUpdated { get; protected set; }
+
+        [StringLength(25)]
         [Required]
         public int CartNumber { get; set; }
 
         [Required]
         public double TotalPrice { get; set; }
 
-        public User User { get; set; }
+        [ForeignKey(nameof(User))]
+        public int UserId { get; set; }
 
-        //[ForeignKey(nameof(OrderStatus))]
-        //public int OrderStatusId { get; set; }
-        //public OrderStatus OrderStatus { get; set; }
+        public User User { get; set; }
 
         public IList<CartItem> CartItems { get; set; }
 

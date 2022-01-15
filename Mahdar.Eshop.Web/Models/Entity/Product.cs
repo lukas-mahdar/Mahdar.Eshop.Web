@@ -16,15 +16,13 @@ namespace Mahdar.Eshop.Web.Models.Entity
         [Required]
         public int ID { get; set; }
 
-        [StringLength(255)]
+        [StringLength(64)]
         [Required]
         public string Name { get; set; }
 
         [StringLength(255)]
         [Required]
         public string Description { get; set; }
-
-        [Required]
         public double Price { get; set; }
 
         [NotMapped]
